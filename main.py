@@ -1,3 +1,5 @@
+# main.py
+
 import os, asyncio
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
@@ -30,8 +32,8 @@ async def start(client, msg):
     kb = [[InlineKeyboardButton("Join update channel", url="https://t.me/Velvetabots")]]
     await msg.reply(WELCOME, reply_markup=InlineKeyboardMarkup(kb))
 
-# Get YouTube Link
-@app.on_message(filters.text & ~filters.command)
+# Get YouTube Link (not a command)
+@app.on_message(filters.text & ~filters.command())
 async def get_link(client, msg):
     link = msg.text.strip()
     if "youtube" not in link and "youtu.be" not in link:
@@ -53,14 +55,13 @@ async def choose_quality(client, cb):
     uid = cb.from_user.id
     user_quality[uid] = cb.data
     link = user_links.get(uid)
-
     await cb.message.edit("⬇️ Downloading...\n[□□□□□□] 0%")
     asyncio.create_task(download_video(cb.message, uid, link))
 
 # Progress bar
 async def progress(d, message):
-    if d["status"] == "downloading":
-        p = d["_percent_str"].replace("%","")
+    if d.get("status") == "downloading":
+        p = d.get("_percent_str", "0%").replace("%", "")
         try:
             val = float(p)
         except:
@@ -72,13 +73,17 @@ async def progress(d, message):
         except:
             pass
 
-# Auto-switch server download
+# Auto-switch server download (silent failover)
 async def download_video(message, uid, link):
-    q = user_quality[uid]
-    if q == "q360": fmt = "bestvideo[height<=360]+bestaudio/best"
-    elif q == "q480": fmt = "bestvideo[height<=480]+bestaudio/best"
-    elif q == "q720": fmt = "bestvideo[height<=720]+bestaudio/best"
-    else: fmt = "bestaudio"
+    q = user_quality.get(uid)
+    if q == "q360":
+        fmt = "bestvideo[height<=360]+bestaudio/best"
+    elif q == "q480":
+        fmt = "bestvideo[height<=480]+bestaudio/best"
+    elif q == "q720":
+        fmt = "bestvideo[height<=720]+bestaudio/best"
+    else:
+        fmt = "bestaudio"
 
     servers = [
         {},
@@ -104,7 +109,7 @@ async def download_video(message, uid, link):
             os.remove(file)
 
             kb = [
-                [InlineKeyboardButton("❤️ Donate", url="https://buymeacoffee.com/VelvetaBots")],
+                [InlineKeyboardButton("❤️ Donate", url="https://buymeacoffee.com/yourname")],
                 [InlineKeyboardButton("🔁 Replay", callback_data="replay")]
             ]
             await message.reply("✅ Download Complete!", reply_markup=InlineKeyboardMarkup(kb))
