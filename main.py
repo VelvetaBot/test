@@ -6,9 +6,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-API_ID = int(os.getenv("11253846"))
-API_HASH = os.getenv("8db4eb50f557faa9a5756e64fb74a51a")
-BOT_TOKEN = os.getenv("8034075115:AAHKc9YkRmEgba3Is9dhhW8v-7zLmLwjVac")
+API_ID = int(os.getenv("API_ID"))
+API_HASH = os.getenv("API_HASH")
+BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 app = Client("velveta", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
