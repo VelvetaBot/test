@@ -32,8 +32,8 @@ async def start(client, msg):
     kb = [[InlineKeyboardButton("Join update channel", url="https://t.me/Velvetabots")]]
     await msg.reply(WELCOME, reply_markup=InlineKeyboardMarkup(kb))
 
-# Get YouTube Link (not a command)
-@app.on_message(filters.text & ~filters.command())
+# Get YouTube Link (not command)
+@app.on_message(filters.text & ~filters.command(["start"]))
 async def get_link(client, msg):
     link = msg.text.strip()
     if "youtube" not in link and "youtu.be" not in link:
@@ -73,7 +73,7 @@ async def progress(d, message):
         except:
             pass
 
-# Auto-switch server download (silent failover)
+# Auto-switch server download
 async def download_video(message, uid, link):
     q = user_quality.get(uid)
     if q == "q360":
